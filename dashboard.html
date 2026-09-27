@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>MUN Secretariat Live Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-6 font-sans">
+  <div class="max-w-5xl mx-auto">
+    <header class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+      <div>
+        <h1 class="text-2xl font-bold">Sekreterya Canlı İhlal & Not Akışı</h1>
+        <p class="text-sm text-slate-400">NFC Taramalarından Gelen Anlık Veriler</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></span>
+        <span class="text-xs text-emerald-400 font-semibold">CANLI YAYIN AKTİF</span>
+      </div>
+    </header>
+
+    <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+      <table class="w-full text-left text-sm text-slate-300">
+        <thead class="bg-slate-900 text-slate-400 uppercase text-xs">
+          <tr>
+            <th class="p-3">Zaman</th>
+            <th class="p-3">Delege ID</th>
+            <th class="p-3">Raporlayan</th>
+            <th class="p-3">Seviye</th>
+            <th class="p-3">Not</th>
+          </tr>
+        </thead>
+        <tbody id="live-table-body" class="divide-y divide-slate-700">
+          <!-- Anlık Veriler Buraya Akacak -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Supabase Realtime Dinleyici (WebSocket)
+    supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'delegate_notes' },
+        (payload) => {
+          const newRecord = payload.new;
+          appendRow(newRecord);
+        }
+      )
+      .subscribe();
+
+    function appendRow(record) {
+      const tbody = document.getElementById('live-table-body');
+      const time = new Date(record.created_at).toLocaleTimeString();
+      const badgeColor = record.severity === 'Red' ? 'bg-red-500/20 text-red-400 border-red-500' : 
+                         record.severity === 'Yellow' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500' : 
+                         'bg-blue-500/20 text-blue-400 border-blue-500';
+
+      const rowHTML = `
+        <tr class="hover:bg-slate-750 transition animate-fade-in">
+          <td class="p-3 font-mono text-xs text-slate-400">${time}</td>
+          <td class="p-3 font-mono text-xs text-slate-300">${record.delegate_id.substring(0,8)}...</td>
+          <td class="p-3 font-semibold text-white">${record.logged_by}</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-xs border ${badgeColor}">${record.severity}</span>
+          </td>
+          <td class="p-3 text-slate-200">${record.note}</td>
+        </tr>
+      `;
+      tbody.insertAdjacentHTML('afterbegin', rowHTML);
+    }
+  </script>
+</body>
+</html>
