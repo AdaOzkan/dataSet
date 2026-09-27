@@ -7,52 +7,70 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-4 font-sans max-w-md mx-auto">
+<body class="bg-gray-100 p-4 font-sans max-w-md mx-auto min-h-screen flex flex-col justify-center">
 
   <!-- Delege Dijital Yaka Kartı -->
-  <div id="badge-card" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-    <div class="bg-slate-900 p-4 text-white text-center">
-      <h1 class="font-bold text-lg tracking-wide">RAYFELMUN '26</h1>
-      <p class="text-xs text-slate-400">OFFICIAL DELEGATE BADGE</p>
+  <div id="badge-card" class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+    <div class="bg-slate-900 p-5 text-white text-center relative">
+      <h1 class="font-extrabold text-xl tracking-wider text-amber-400">RAYFELMUN '26</h1>
+      <p class="text-xs text-slate-300 tracking-widest uppercase mt-1">Resmi Delege Yaka Kartı</p>
     </div>
-    <div class="p-6 text-center">
-      <img id="d-photo" src="https://via.placeholder.com/150" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-slate-900 shadow">
-      <h2 id="d-name" class="text-xl font-bold text-gray-800">Yükleniyor...</h2>
-      <div class="flex justify-center gap-2 mt-2">
-        <span id="d-committee" class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-semibold"></span>
-        <span id="d-country" class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-semibold"></span>
+    
+    <div class="p-6 text-center space-y-4">
+      <!-- Profil / Baş Harf İkonu -->
+      <div id="avatar-box" class="w-20 h-20 bg-slate-900 text-amber-400 font-bold text-2xl rounded-full mx-auto flex items-center justify-center shadow-md border-4 border-slate-100">
+        <span id="avatar-initials">--</span>
+      </div>
+
+      <!-- İsim Soyisim -->
+      <div>
+        <h2 id="d-name" class="text-2xl font-black text-slate-800 tracking-tight">Yükleniyor...</h2>
+        <p class="text-xs text-slate-400 uppercase tracking-widest mt-0.5">Delege</p>
+      </div>
+
+      <!-- Komite & Ülke Bilgileri -->
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <div class="bg-blue-50 border border-blue-200 p-3 rounded-2xl">
+          <p class="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Komite</p>
+          <p id="d-committee" class="text-base font-extrabold text-blue-900 mt-0.5">-</p>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl">
+          <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Ülke / Temsil</p>
+          <p id="d-country" class="text-base font-extrabold text-emerald-900 mt-0.5">-</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Güvenlik / Staff Paneli (Not Ekleme) -->
-  <div class="mt-6 bg-white p-5 rounded-2xl shadow border border-gray-200">
-    <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">Güvenlik & Chair Paneli</h3>
+  <!-- Güvenlik / Chair Paneli -->
+  <div class="mt-6 bg-white p-5 rounded-3xl shadow-xl border border-gray-200">
+    <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-red-500"></span> Güvenlik & Chair Paneli
+    </h3>
     
     <div class="space-y-3">
-      <input id="staff-name" type="text" placeholder="Giriş Yapan Görevli Adı" class="w-full text-sm p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800">
-      <textarea id="note-text" placeholder="İhlal / Not detayını yazın..." class="w-full text-sm p-2 border rounded-lg h-20 focus:outline-none focus:ring-2 focus:ring-slate-800"></textarea>
+      <input id="staff-name" type="text" placeholder="Giriş Yapan Görevli Adı" class="w-full text-sm p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 bg-gray-50">
+      <textarea id="note-text" placeholder="İhlal / Not detayını yazın..." class="w-full text-sm p-3 border border-gray-200 rounded-xl h-20 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-gray-50"></textarea>
       
-      <select id="severity" class="w-full text-sm p-2 border rounded-lg bg-white">
+      <select id="severity" class="w-full text-sm p-3 border border-gray-200 rounded-xl bg-gray-50 text-slate-700 font-semibold">
         <option value="Info">Bilgi / Genel Not</option>
         <option value="Yellow">Sarı Kart (Uyarı)</option>
         <option value="Red">Kırmızı Kart (Ağır İhlal)</option>
       </select>
 
-      <button onclick="addNote()" class="w-full bg-slate-900 text-white font-semibold py-2.5 rounded-lg text-sm hover:bg-slate-800 transition">
+      <button onclick="addNote()" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl text-sm hover:bg-slate-800 transition shadow-lg active:scale-95">
         Notu Veritabanına İşle
       </button>
     </div>
 
     <!-- Geçmiş Notlar -->
     <div class="mt-5">
-      <h4 class="text-xs font-semibold text-gray-500 mb-2">Sistemdeki Not Geçmişi</h4>
+      <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Sistemdeki Not Geçmişi</h4>
       <ul id="notes-list" class="space-y-2 text-xs"></ul>
     </div>
   </div>
 
   <script>
-    // Sizin projenize ait API anahtarları
     const SUPABASE_URL = "https://slxedihzptfjmhxsdhyl.supabase.co";
     const SUPABASE_KEY = "sb_publishable_cXaZS9Eml-wHkF7toWO93A_oGviuKsZ";
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -62,7 +80,8 @@
 
     async function loadDelegate() {
       if (!delegateId) {
-          document.getElementById('d-name').innerText = "Kart ID Bulunamadı!";
+          document.getElementById('d-name').innerText = "Geçersiz Link!";
+          alert("Lütfen URL sonunda geçerli bir delege ID'si bulundurun.");
           return;
       }
 
@@ -73,16 +92,19 @@
         .single();
 
       if (error || !delegate) {
-        document.getElementById('d-name').innerText = "Delege Bulunamadı";
+        document.getElementById('d-name').innerText = "Delege Bulunamadı!";
+        document.getElementById('d-name').classList.add('text-red-500');
+        alert("HATA: Bu ID veritabanında yok! Lütfen Supabase'den gerçek bir ID kopyalayın.");
         return;
       }
 
       document.getElementById('d-name').innerText = delegate.full_name;
       document.getElementById('d-committee').innerText = delegate.committee;
       document.getElementById('d-country').innerText = delegate.country;
-      if (delegate.photo_url) {
-        document.getElementById('d-photo').src = delegate.photo_url;
-      }
+
+      // İsim baş harflerinden daire profil ikonu oluştur
+      const initials = delegate.full_name ? delegate.full_name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() : '??';
+      document.getElementById('avatar-initials').innerText = initials;
 
       loadNotes();
     }
@@ -94,22 +116,21 @@
         .eq('delegate_id', delegateId)
         .order('created_at', { ascending: false });
 
-      if(error) {
-          console.error("Notlar yüklenirken hata oluştu:", error);
-          return;
-      }
+      if (error) return;
 
       const list = document.getElementById('notes-list');
       list.innerHTML = '';
-      if (notes) {
+      if (notes && notes.length > 0) {
         notes.forEach(n => {
-          const color = n.severity === 'Red' ? 'border-red-500 bg-red-50' : n.severity === 'Yellow' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-300 bg-gray-50';
+          const color = n.severity === 'Red' ? 'border-red-500 bg-red-50 text-red-900' : n.severity === 'Yellow' ? 'border-yellow-500 bg-yellow-50 text-yellow-900' : 'border-gray-300 bg-gray-50 text-gray-800';
           list.innerHTML += `
-            <li class="p-2 border-l-4 ${color} rounded shadow-sm">
-              <div class="font-bold text-gray-700">${n.logged_by} <span class="text-xs font-normal">(${n.severity})</span></div>
-              <div>${n.note}</div>
+            <li class="p-3 border-l-4 ${color} rounded-xl shadow-sm">
+              <div class="font-bold">${n.logged_by} <span class="text-[10px] opacity-75">(${n.severity})</span></div>
+              <div class="mt-0.5">${n.note}</div>
             </li>`;
         });
+      } else {
+        list.innerHTML = '<li class="text-gray-400 italic">Henüz not eklenmemiş.</li>';
       }
     }
 
@@ -125,9 +146,9 @@
       ]);
 
       if (error) {
-        alert("Hata oluştu: " + error.message);
-        console.error("Not eklenirken hata:", error);
+        alert("Not İşlenemedi! Sebep: " + error.message);
       } else {
+        alert("Not veritabanına başarıyla eklendi!");
         document.getElementById('note-text').value = '';
         loadNotes();
       }
