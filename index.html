@@ -6,10 +6,11 @@
   <title>RAYFELMUN Digital Badge</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
+  <!-- Google Fonts: Big Shoulders Display eklendi -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@500;700;900&family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
   
   <style>
-    /* Özel Font Tanımlamaları (Repo ana dizinindeki dosyaları çağırır) */
+    /* Özel Font Tanımlamaları */
     @font-face {
       font-family: 'Northwell';
       src: url('northwell.ttf') format('truetype');
@@ -29,6 +30,11 @@
       src: url('Formula1-Regular.ttf') format('truetype'),
            url('Formula1-Regular.woff2') format('woff2');
     }
+    /* Yeni Eklenen KH Interface Fontu */
+    @font-face {
+      font-family: 'KHInterface';
+      src: url('KH-Interface.ttf') format('truetype');
+    }
 
     /* Font Sınıfları */
     .font-northwell {
@@ -45,6 +51,12 @@
     .font-formula-regular {
       font-family: 'FormulaRegular', 'Montserrat', sans-serif;
       font-weight: 500;
+    }
+    .font-kh-interface {
+      font-family: 'KHInterface', monospace;
+    }
+    .font-big-shoulders {
+      font-family: 'Big Shoulders Display', sans-serif;
     }
 
     .bg-badge-dark {
@@ -68,69 +80,71 @@
       <img src="rayfelmunLogo.png" alt="RAYFELMUN Logo" class="w-80 h-auto opacity-[0.36] object-contain" onerror="this.style.display='none'">
     </div>
 
-    <!-- Üst Geometrik Mint Çizgiler -->
+    <!-- Üst Geometrik Mint Çizgiler (50 Derece Açı) -->
     <div class="relative z-10 w-full mb-2">
       <div class="flex flex-col gap-1.5 items-center">
-        <div class="w-full h-3.5 bg-mint rounded-sm transform -skew-x-12"></div>
-        <div class="w-4/5 h-2.5 bg-mint rounded-sm transform -skew-x-12 opacity-80"></div>
+        <!-- -skew-x-[50deg] ile açılar tam 50 dereceye ayarlandı -->
+        <div class="w-full h-3.5 bg-mint rounded-sm -skew-x-[50deg]"></div>
+        <div class="w-4/5 h-2.5 bg-mint rounded-sm -skew-x-[50deg] opacity-80"></div>
       </div>
     </div>
 
     <!-- Kart İçerik Alanı -->
     <div class="relative z-10 flex-1 flex flex-col justify-center items-center space-y-2 py-4">
       
-      <!-- Ad (Northwell El Yazısı Fontu) -->
+      <!-- Ad (Northwell) -->
       <div id="d-firstname" class="font-northwell text-mint text-6xl leading-none tracking-wide pt-2">
         Ada
       </div>
 
-      <!-- Soyad (F1 Display Black Fontu) -->
+      <!-- Soyad (F1 Display Black) -->
       <div id="d-lastname" class="font-f1-black text-white text-4xl uppercase tracking-wider leading-tight">
         ÖZKAN
       </div>
 
-      <!-- Komite (Formula Bold Fontu) -->
+      <!-- Komite (Formula Bold) -->
       <div id="d-committee" class="font-formula-bold text-mint text-4xl uppercase tracking-wide pt-2">
         LEGAL
       </div>
 
-      <!-- Ülke (Formula Regular Fontu) -->
-      <div id="d-country" class="font-formula-regular text-white text-2xl uppercase tracking-widest pb-1">
+      <!-- Ülke (Big Shoulders Display) -->
+      <div id="d-country" class="font-big-shoulders font-bold text-white text-4xl uppercase tracking-widest pb-1">
         USA
       </div>
 
-      <!-- Okul Bilgisi (Formula Regular Fontu) -->
+      <!-- Okul Bilgisi (Formula Regular) -->
       <div id="d-school" class="font-formula-regular text-mint text-xs uppercase tracking-wider px-2 leading-relaxed pt-2">
         RAMAZAN YAMAN SCIENCE HIGH SCHOOL
       </div>
 
-      <!-- Telefon / İletişim -->
-      <div id="d-phone" class="font-formula-regular text-white text-sm tracking-widest pt-2">
+      <!-- Telefon / İletişim (KH Interface Fontu) -->
+      <div id="d-phone" class="font-kh-interface text-white text-sm tracking-widest pt-2">
         +90: 5070107106
       </div>
 
-      <!-- Danışman / İletişim Detayları -->
-      <div class="text-[10px] font-mono text-slate-300 space-y-0.5 pt-3 tracking-wider opacity-90">
+      <!-- Danışman / İletişim Detayları (KH Interface Fontu) -->
+      <div class="font-kh-interface text-[11px] text-slate-300 space-y-0.5 pt-3 tracking-wider opacity-90 uppercase">
         <div>ADVISOR NAME: <span id="advisor-name">XXXX XXXX</span></div>
         <div>ADVISOR NUMBER: <span id="advisor-number">+90 XXX XXX XX XX</span></div>
       </div>
 
     </div>
 
-    <!-- Alt Geometrik Çizgiler & Cursive Footer -->
+    <!-- Alt Geometrik Çizgiler & Cursive Footer (50 Derece Açı) -->
     <div class="relative z-10 w-full mt-2 space-y-2">
       <div class="font-northwell text-white text-3xl tracking-wide">
         Rayfelmun'27
       </div>
       <div class="flex flex-col gap-1.5 items-center">
-        <div class="w-full h-2.5 bg-mint rounded-sm transform skew-x-12"></div>
-        <div class="w-3/5 h-1.5 bg-mint rounded-sm transform skew-x-12 opacity-80"></div>
+        <!-- skew-x-[50deg] ile alt çizgiler zıt yönde 50 dereceye ayarlandı -->
+        <div class="w-full h-2.5 bg-mint rounded-sm skew-x-[50deg]"></div>
+        <div class="w-3/5 h-1.5 bg-mint rounded-sm skew-x-[50deg] opacity-80"></div>
       </div>
     </div>
 
   </div>
 
-  <!-- GÜVENLİK & CHAIR NOT EKLEME PANELİ -->
+  <!-- GÜVENLİK & CHAIR NOT EKLEME PANELİ (Sistemsel Yapı Değişmedi) -->
   <div class="w-full max-w-[380px] bg-slate-900 border border-slate-800 p-5 rounded-3xl shadow-xl mt-2">
     <h3 class="text-xs font-black text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
       <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span> Güvenlik & Chair Paneli
@@ -195,7 +209,6 @@
           return;
         }
 
-        // İsim ve Soyismi Ayırma (Son kelime soyisim olarak alınır)
         if (delegate.full_name) {
           const parts = delegate.full_name.trim().split(' ');
           if (parts.length > 1) {
