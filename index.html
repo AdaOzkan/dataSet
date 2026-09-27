@@ -16,7 +16,7 @@
       <p class="text-xs text-slate-400">OFFICIAL DELEGATE BADGE</p>
     </div>
     <div class="p-6 text-center">
-      <img id="d-photo" src="" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-slate-900 shadow">
+      <img id="d-photo" src="https://via.placeholder.com/150" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-slate-900 shadow">
       <h2 id="d-name" class="text-xl font-bold text-gray-800">Yükleniyor...</h2>
       <div class="flex justify-center gap-2 mt-2">
         <span id="d-committee" class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-semibold"></span>
@@ -52,50 +52,65 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+    // Sizin projenize ait API anahtarları
+    const SUPABASE_URL = "https://slxedihzptfjmhxsdhyl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_cXaZS9Eml-wHkF7toWO93A_oGviuKsZ";
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const urlParams = new URLSearchParams(window.location.search);
     const delegateId = urlParams.get('id');
 
     async function loadDelegate() {
-      if (!delegateId) return alert("Geçersiz NFC Kartı!");
+      if (!delegateId) {
+          document.getElementById('d-name').innerText = "Kart ID Bulunamadı!";
+          return;
+      }
 
-      // Delege Bilgisi Çek
-      const { data: delegate } = await supabase
+      const { data: delegate, error } = await supabase
         .from('delegates')
         .select('*')
         .eq('id', delegateId)
         .single();
 
-      if (delegate) {
-        document.getElementById('d-name').innerText = delegate.full_name;
-        document.getElementById('d-committee').innerText = delegate.committee;
-        document.getElementById('d-country').innerText = delegate.country;
-        document.getElementById('d-photo').src = delegate.photo_url || 'https://via.placeholder.com/150';
+      if (error || !delegate) {
+        document.getElementById('d-name').innerText = "Delege Bulunamadı";
+        return;
+      }
+
+      document.getElementById('d-name').innerText = delegate.full_name;
+      document.getElementById('d-committee').innerText = delegate.committee;
+      document.getElementById('d-country').innerText = delegate.country;
+      if (delegate.photo_url) {
+        document.getElementById('d-photo').src = delegate.photo_url;
       }
 
       loadNotes();
     }
 
     async function loadNotes() {
-      const { data: notes } = await supabase
+      const { data: notes, error } = await supabase
         .from('delegate_notes')
         .select('*')
         .eq('delegate_id', delegateId)
         .order('created_at', { ascending: false });
 
+      if(error) {
+          console.error("Notlar yüklenirken hata oluştu:", error);
+          return;
+      }
+
       const list = document.getElementById('notes-list');
       list.innerHTML = '';
-      notes.forEach(n => {
-        const color = n.severity === 'Red' ? 'border-red-500 bg-red-50' : n.severity === 'Yellow' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-300 bg-gray-50';
-        list.innerHTML += `
-          <li class="p-2 border-l-4 ${color} rounded shadow-sm">
-            <div class="font-bold text-gray-700">${n.logged_by} (${n.severity})</div>
-            <div>${n.note}</div>
-          </li>`;
-      });
+      if (notes) {
+        notes.forEach(n => {
+          const color = n.severity === 'Red' ? 'border-red-500 bg-red-50' : n.severity === 'Yellow' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-300 bg-gray-50';
+          list.innerHTML += `
+            <li class="p-2 border-l-4 ${color} rounded shadow-sm">
+              <div class="font-bold text-gray-700">${n.logged_by} <span class="text-xs font-normal">(${n.severity})</span></div>
+              <div>${n.note}</div>
+            </li>`;
+        });
+      }
     }
 
     async function addNote() {
@@ -105,12 +120,17 @@
 
       if (!staff || !note) return alert("Lütfen görevli adını ve notu doldurun.");
 
-      await supabase.from('delegate_notes').insert([
+      const { error } = await supabase.from('delegate_notes').insert([
         { delegate_id: delegateId, logged_by: staff, note: note, severity: severity }
       ]);
 
-      document.getElementById('note-text').value = '';
-      loadNotes();
+      if (error) {
+        alert("Hata oluştu: " + error.message);
+        console.error("Not eklenirken hata:", error);
+      } else {
+        document.getElementById('note-text').value = '';
+        loadNotes();
+      }
     }
 
     loadDelegate();

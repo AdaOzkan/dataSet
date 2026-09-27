@@ -31,16 +31,33 @@
           </tr>
         </thead>
         <tbody id="live-table-body" class="divide-y divide-slate-700">
-          <!-- Anlık Veriler Buraya Akacak -->
         </tbody>
       </table>
     </div>
   </div>
 
   <script>
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+    // Sizin projenize ait API anahtarları
+    const SUPABASE_URL = "https://slxedihzptfjmhxsdhyl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_cXaZS9Eml-wHkF7toWO93A_oGviuKsZ";
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // İlk yüklemede mevcut notları getir
+    async function loadInitialNotes() {
+      const { data: notes, error } = await supabase
+        .from('delegate_notes')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if(error) {
+          console.error("Geçmiş notlar yüklenirken hata:", error);
+          return;
+      }
+
+      if (notes) {
+        notes.forEach(record => appendRow(record));
+      }
+    }
 
     // Supabase Realtime Dinleyici (WebSocket)
     supabase
@@ -49,22 +66,29 @@
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'delegate_notes' },
         (payload) => {
-          const newRecord = payload.new;
-          appendRow(newRecord);
+          console.log("Yeni not geldi!", payload);
+          appendRow(payload.new);
         }
       )
       .subscribe();
 
     function appendRow(record) {
       const tbody = document.getElementById('live-table-body');
-      const time = new Date(record.created_at).toLocaleTimeString();
+      
+      // Zaman damgası formatlama
+      let timeStr = "";
+      if(record.created_at) {
+          const dateObj = new Date(record.created_at);
+          timeStr = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute:'2-digit', second:'2-digit' });
+      }
+
       const badgeColor = record.severity === 'Red' ? 'bg-red-500/20 text-red-400 border-red-500' : 
                          record.severity === 'Yellow' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500' : 
                          'bg-blue-500/20 text-blue-400 border-blue-500';
 
       const rowHTML = `
-        <tr class="hover:bg-slate-750 transition animate-fade-in">
-          <td class="p-3 font-mono text-xs text-slate-400">${time}</td>
+        <tr class="hover:bg-slate-750 transition border-b border-slate-700/50">
+          <td class="p-3 font-mono text-xs text-slate-400">${timeStr}</td>
           <td class="p-3 font-mono text-xs text-slate-300">${record.delegate_id.substring(0,8)}...</td>
           <td class="p-3 font-semibold text-white">${record.logged_by}</td>
           <td class="p-3">
@@ -73,8 +97,13 @@
           <td class="p-3 text-slate-200">${record.note}</td>
         </tr>
       `;
+      
+      // Yeni gelenleri en üste ekle
       tbody.insertAdjacentHTML('afterbegin', rowHTML);
     }
+
+    // Sayfa yüklendiğinde eski verileri çek
+    loadInitialNotes();
   </script>
 </body>
 </html>
