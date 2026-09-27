@@ -94,38 +94,38 @@
       
       <!-- Ad (Northwell) -->
       <div id="d-firstname" class="font-northwell text-mint text-6xl leading-none tracking-wide pt-2">
-        Ada
+        Yükleniyor
       </div>
 
       <!-- Soyad (F1 Display Black) -->
       <div id="d-lastname" class="font-f1-black text-white text-4xl uppercase tracking-wider leading-tight">
-        ÖZKAN
+        ...
       </div>
 
       <!-- Komite (Formula Bold) -->
       <div id="d-committee" class="font-formula-bold text-mint text-4xl uppercase tracking-wide pt-2">
-        LEGAL
+        -
       </div>
 
       <!-- Ülke (Big Shoulders Display) -->
       <div id="d-country" class="font-big-shoulders font-bold text-white text-4xl uppercase tracking-widest pb-1">
-        USA
+        -
       </div>
 
       <!-- Okul Bilgisi (Formula Regular) -->
       <div id="d-school" class="font-formula-regular text-mint text-xs uppercase tracking-wider px-2 leading-relaxed pt-2">
-        RAMAZAN YAMAN SCIENCE HIGH SCHOOL
+        -
       </div>
 
       <!-- Telefon / İletişim (KH Interface Fontu) -->
       <div id="d-phone" class="font-kh-interface text-white text-sm tracking-widest pt-2">
-        +90: 5070107106
+        -
       </div>
 
       <!-- Danışman / İletişim Detayları (KH Interface Fontu) -->
       <div class="font-kh-interface text-[11px] text-slate-300 space-y-0.5 pt-3 tracking-wider opacity-90 uppercase">
-        <div>ADVISOR NAME: <span id="advisor-name">XXXX XXXX</span></div>
-        <div>ADVISOR NUMBER: <span id="advisor-number">+90 XXX XXX XX XX</span></div>
+        <div>ADVISOR NAME: <span id="advisor-name">-</span></div>
+        <div>ADVISOR NUMBER: <span id="advisor-number">-</span></div>
       </div>
 
     </div>
@@ -144,7 +144,7 @@
 
   </div>
 
-  <!-- GÜVENLİK & CHAIR NOT EKLEME PANELİ (Sistemsel Yapı Değişmedi) -->
+  <!-- GÜVENLİK & CHAIR NOT EKLEME PANELİ -->
   <div class="w-full max-w-[380px] bg-slate-900 border border-slate-800 p-5 rounded-3xl shadow-xl mt-2">
     <h3 class="text-xs font-black text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
       <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span> Güvenlik & Chair Paneli
@@ -181,6 +181,10 @@
       const lastNameEl = document.getElementById('d-lastname');
       const commEl = document.getElementById('d-committee');
       const countryEl = document.getElementById('d-country');
+      const schoolEl = document.getElementById('d-school');
+      const phoneEl = document.getElementById('d-phone');
+      const advNameEl = document.getElementById('advisor-name');
+      const advPhoneEl = document.getElementById('advisor-number');
 
       try {
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -222,6 +226,12 @@
 
         commEl.innerText = delegate.committee || '-';
         countryEl.innerText = delegate.country || '-';
+        
+        // YENİ EKLENEN VERİ BAĞLANTILARI
+        schoolEl.innerText = delegate.school_name || 'BELİRTİLMEMİŞ';
+        phoneEl.innerText = delegate.phone || 'BELİRTİLMEMİŞ';
+        advNameEl.innerText = delegate.advisor_name || 'BELİRTİLMEMİŞ';
+        advPhoneEl.innerText = delegate.advisor_phone || 'BELİRTİLMEMİŞ';
 
         loadNotes(client, delegateId);
 
