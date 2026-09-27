@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MUN Digital Badge</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4 font-sans max-w-md mx-auto">
+
+  <!-- Delege Dijital Yaka Kartı -->
+  <div id="badge-card" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+    <div class="bg-slate-900 p-4 text-white text-center">
+      <h1 class="font-bold text-lg tracking-wide">RAYFELMUN '26</h1>
+      <p class="text-xs text-slate-400">OFFICIAL DELEGATE BADGE</p>
+    </div>
+    <div class="p-6 text-center">
+      <img id="d-photo" src="" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-slate-900 shadow">
+      <h2 id="d-name" class="text-xl font-bold text-gray-800">Yükleniyor...</h2>
+      <div class="flex justify-center gap-2 mt-2">
+        <span id="d-committee" class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-semibold"></span>
+        <span id="d-country" class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-semibold"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Güvenlik / Staff Paneli (Not Ekleme) -->
+  <div class="mt-6 bg-white p-5 rounded-2xl shadow border border-gray-200">
+    <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">Güvenlik & Chair Paneli</h3>
+    
+    <div class="space-y-3">
+      <input id="staff-name" type="text" placeholder="Giriş Yapan Görevli Adı" class="w-full text-sm p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800">
+      <textarea id="note-text" placeholder="İhlal / Not detayını yazın..." class="w-full text-sm p-2 border rounded-lg h-20 focus:outline-none focus:ring-2 focus:ring-slate-800"></textarea>
+      
+      <select id="severity" class="w-full text-sm p-2 border rounded-lg bg-white">
+        <option value="Info">Bilgi / Genel Not</option>
+        <option value="Yellow">Sarı Kart (Uyarı)</option>
+        <option value="Red">Kırmızı Kart (Ağır İhlal)</option>
+      </select>
+
+      <button onclick="addNote()" class="w-full bg-slate-900 text-white font-semibold py-2.5 rounded-lg text-sm hover:bg-slate-800 transition">
+        Notu Veritabanına İşle
+      </button>
+    </div>
+
+    <!-- Geçmiş Notlar -->
+    <div class="mt-5">
+      <h4 class="text-xs font-semibold text-gray-500 mb-2">Sistemdeki Not Geçmişi</h4>
+      <ul id="notes-list" class="space-y-2 text-xs"></ul>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const delegateId = urlParams.get('id');
+
+    async function loadDelegate() {
+      if (!delegateId) return alert("Geçersiz NFC Kartı!");
+
+      // Delege Bilgisi Çek
+      const { data: delegate } = await supabase
+        .from('delegates')
+        .select('*')
+        .eq('id', delegateId)
+        .single();
+
+      if (delegate) {
+        document.getElementById('d-name').innerText = delegate.full_name;
+        document.getElementById('d-committee').innerText = delegate.committee;
+        document.getElementById('d-country').innerText = delegate.country;
+        document.getElementById('d-photo').src = delegate.photo_url || 'https://via.placeholder.com/150';
+      }
+
+      loadNotes();
+    }
+
+    async function loadNotes() {
+      const { data: notes } = await supabase
+        .from('delegate_notes')
+        .select('*')
+        .eq('delegate_id', delegateId)
+        .order('created_at', { ascending: false });
+
+      const list = document.getElementById('notes-list');
+      list.innerHTML = '';
+      notes.forEach(n => {
+        const color = n.severity === 'Red' ? 'border-red-500 bg-red-50' : n.severity === 'Yellow' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-300 bg-gray-50';
+        list.innerHTML += `
+          <li class="p-2 border-l-4 ${color} rounded shadow-sm">
+            <div class="font-bold text-gray-700">${n.logged_by} (${n.severity})</div>
+            <div>${n.note}</div>
+          </li>`;
+      });
+    }
+
+    async function addNote() {
+      const staff = document.getElementById('staff-name').value;
+      const note = document.getElementById('note-text').value;
+      const severity = document.getElementById('severity').value;
+
+      if (!staff || !note) return alert("Lütfen görevli adını ve notu doldurun.");
+
+      await supabase.from('delegate_notes').insert([
+        { delegate_id: delegateId, logged_by: staff, note: note, severity: severity }
+      ]);
+
+      document.getElementById('note-text').value = '';
+      loadNotes();
+    }
+
+    loadDelegate();
+  </script>
+</body>
+</html>
